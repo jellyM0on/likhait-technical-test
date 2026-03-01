@@ -3,15 +3,15 @@
  */
 
 import React, { useState } from "react";
-import { Expense, ExpenseFormData } from "../types";
+import { Category, Expense, ExpenseFormData } from "../types";
 import { formatCurrency, formatDate } from "../utils/expenseUtils";
-import { getCategoryEmoji } from "../constants/categoryEmojis";
 import { COLORS } from "../constants/colors";
 import { Button, Modal, Pagination } from "../vibes";
 import { ExpenseForm } from "./ExpenseForm.tsx";
 import { deleteExpense, updateExpense } from "../services/api";
 
 interface CalendarExpenseTableProps {
+  categories: Category[];
   expenses: Expense[];
   onExpenseUpdated: () => void;
 }
@@ -19,6 +19,7 @@ interface CalendarExpenseTableProps {
 const ITEMS_PER_PAGE = 10;
 
 export function CalendarExpenseTable({
+  categories,
   expenses,
   onExpenseUpdated,
 }: CalendarExpenseTableProps) {
@@ -142,8 +143,8 @@ export function CalendarExpenseTable({
                     gap: "0.5rem",
                   }}
                 >
-                  <span>{getCategoryEmoji(expense.category)}</span>
-                  <span>{expense.category}</span>
+                  <span>{expense.category.emoji || "📦"}</span>
+                  <span>{expense.category.name}</span>
                 </span>
               </td>
               <td style={{ ...tdStyle, textAlign: "left", fontWeight: 600 }}>
@@ -191,9 +192,10 @@ export function CalendarExpenseTable({
             initialData={{
               amount: editingExpense.amount.toString(),
               description: editingExpense.description,
-              category: editingExpense.category,
+              categoryId: String(editingExpense.category.id),
               date: formatDate(new Date(editingExpense.date)),
             }}
+            categories={categories}
             onSubmit={handleUpdate}
             onCancel={() => {
               setIsEditModalOpen(false);

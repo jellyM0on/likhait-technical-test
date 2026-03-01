@@ -6,7 +6,7 @@ export interface Expense {
   id: number;
   amount: number;
   description: string;
-  category: string;
+  category: Category;
   date: string;
   created_at: string;
   updated_at: string;
@@ -15,7 +15,7 @@ export interface Expense {
 export interface ExpenseFormData {
   amount: string;
   description: string;
-  category: string;
+  categoryId: string;
   date: string;
 }
 
@@ -41,4 +41,15 @@ export interface DayExpenses {
   day: number;
   expenses: Expense[];
   total: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  emoji: string | null;
+}
+
+export interface CategoryFormData {
+  name: string;
+  emoji: string;
 }
