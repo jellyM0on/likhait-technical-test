@@ -46,7 +46,7 @@ export interface DayExpenses {
 export interface Category {
   id: number;
   name: string;
-  emoji: string;
+  emoji: string | null;
   created_at: string;
   updated_at: string;
 }
