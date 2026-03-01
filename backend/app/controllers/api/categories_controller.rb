@@ -10,8 +10,15 @@ class Api::CategoriesController < ApplicationController
     if category.save
       render json: category, status: :created
     else
-      render json: { errors: category.errors.full_messages },
-            status: :unprocessable_entity
+      # NOTE: Ideally, standardize validation error formatting across other controllers
+      render json: {
+        errors: category.errors.to_hash.transform_values do |messages|
+          messages.map do |message|
+            formatted = message.capitalize
+            formatted.end_with?(".") ? formatted : "#{formatted}."
+          end
+        end
+      }, status: :unprocessable_entity
     end
   end
 
