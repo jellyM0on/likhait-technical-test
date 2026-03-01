@@ -73,9 +73,9 @@ export function ExpenseForm({
       <SelectBox
         label="Category"
         options={categoryOptions}
-        value={formData.category}
-        onChange={(e) => handleChange("category", e.target.value)}
-        error={errors.category}
+        value={formData.categoryId}
+        onChange={(e) => handleChange("categoryId", e.target.value)}
+        error={errors.categoryId}
         fullWidth
         required
       />

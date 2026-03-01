@@ -36,17 +36,6 @@ export async function getExpenses(
 /**
  * Fetch all categories
  */
-export async function fetchCategories(): Promise<
-  Array<{ id: number; name: string }>
-> {
-  const response = await fetch(`${API_BASE_URL}/categories`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch categories");
-  }
-  return response.json();
-}
-
-// TODO: Remove fetchCategories and use getCategories
 export async function getCategories(): Promise<Category[]> {
   const response = await fetch(`${API_BASE_URL}/categories`);
   if (!response.ok) {
@@ -60,14 +49,10 @@ export async function getCategories(): Promise<Category[]> {
  * Create a new expense
  */
 export async function createExpense(data: ExpenseFormData): Promise<Expense> {
-  // Convert category name to category_id
-  const categories = await fetchCategories();
-  const category = categories.find((c) => c.name === data.category);
-
   const expenseData = {
     description: data.description,
     amount: data.amount,
-    category_id: category?.id,
+    category_id: data.categoryId,
     date: data.date,
   };
 
