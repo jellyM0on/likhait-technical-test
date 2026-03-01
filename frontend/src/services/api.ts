@@ -69,11 +69,17 @@ export async function createExpense(data: ExpenseFormData): Promise<Expense> {
     body: JSON.stringify({ expense: expenseData }),
   });
 
-  if (!response.ok) {
+  const body = await response.json();
+
+   if (!response.ok) {
+    if (body?.errors) {
+      throw body;
+    }
+
     throw new Error("Failed to create expense");
   }
 
-  return response.json();
+  return body;
 }
 
 /**
@@ -91,11 +97,17 @@ export async function updateExpense(
     body: JSON.stringify({ expense: data }),
   });
 
-  if (!response.ok) {
+  const body = await response.json();
+
+   if (!response.ok) {
+    if (body?.errors) {
+      throw body;
+    }
+
     throw new Error("Failed to update expense");
   }
 
-  return response.json();
+  return body;
 }
 
 /**

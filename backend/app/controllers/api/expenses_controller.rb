@@ -21,7 +21,14 @@ class Api::ExpensesController < ApplicationController
     if expense.save
       render json: format_expense(expense), status: :created
     else
-      render json: { errors: expense.errors.full_messages }, status: :unprocessable_entity
+      render json: {
+        errors: expense.errors.to_hash.transform_values do |messages|
+          messages.map do |message|
+            formatted = message.capitalize
+            formatted.end_with?(".") ? formatted : "#{formatted}."
+          end
+        end
+      }, status: :unprocessable_entity
     end
   end
 
@@ -31,7 +38,14 @@ class Api::ExpensesController < ApplicationController
     if expense.update(expense_params)
       render json: format_expense(expense)
     else
-      render json: { errors: expense.errors.full_messages }, status: :unprocessable_entity
+      render json: {
+        errors: expense.errors.to_hash.transform_values do |messages|
+          messages.map do |message|
+            formatted = message.capitalize
+            formatted.end_with?(".") ? formatted : "#{formatted}."
+          end
+        end
+      }, status: :unprocessable_entity
     end
   end
 
