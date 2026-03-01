@@ -16,7 +16,7 @@ export function useCategoryForm({
 }: UseCategoryFormProps) {
   const [formData, setFormData] = useState<CategoryFormData>({
     name: initialData?.name || "",
-    emoji: initialData?.emoji || "📁",
+    emoji: initialData?.emoji || "",
   });
 
   const [errors, setErrors] = useState<Partial<CategoryFormData>>({});
@@ -36,10 +36,6 @@ export function useCategoryForm({
 
     if (!formData.name.trim()) {
       newErrors.name = "Category name is required.";
-    }
-
-    if (!formData.emoji) {
-      newErrors.emoji = "Please select an emoji.";
     }
 
     setErrors(newErrors);
@@ -62,7 +58,7 @@ export function useCategoryForm({
 
       setFormData({
         name: "",
-        emoji: "📁",
+        emoji: "",
       });
       setErrors({});
       setShowPicker(false);
@@ -79,7 +75,7 @@ export function useCategoryForm({
   const resetForm = () => {
     setFormData({
       name: initialData?.name || "",
-      emoji: initialData?.emoji || "📁",
+      emoji: initialData?.emoji || "",
     });
     setErrors({});
     setShowPicker(false);
