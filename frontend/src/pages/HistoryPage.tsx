@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getExpenses, createExpense, createCategory } from "../services/api";
-import { CategoryFormData, Expense, ExpenseFormData } from "../types";
+import { getExpenses, createExpense, createCategory, getCategories } from "../services/api";
+import { Category, CategoryFormData, Expense, ExpenseFormData } from "../types";
 import YearNavigation from "../components/YearNavigation";
 import { MonthNavigation } from "../components/MonthNavigation";
 import CategoryBreakdown from "../components/CategoryBreakdown";
@@ -17,6 +17,8 @@ const HistoryPage: React.FC = () => {
 
   const [isManageDropdownOpen, setisManageDropdownOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const [expenseCategories, setExpenseCategories] = useState<Category[]>([]);
 
   // Get year and month from URL params, default to current date if not provided
   const getInitialYearMonth = () => {
@@ -65,6 +67,22 @@ const HistoryPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const data = await getCategories()
+      setExpenseCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
     updateURL(year, selectedMonth);
@@ -90,6 +108,7 @@ const HistoryPage: React.FC = () => {
     try {
       await createCategory(data);
       setIsCategoryModalOpen(false);
+      fetchCategories();
     } catch (error) {
       console.error("Error creating category:", error);
       throw error;
@@ -273,6 +292,7 @@ const HistoryPage: React.FC = () => {
         title="Add New Expense"
       >
         <ExpenseForm
+          categories={expenseCategories}
           onSubmit={handleAddExpense}
           onCancel={() => setIsModalOpen(false)}
         />
