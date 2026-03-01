@@ -71,7 +71,10 @@ export function useExpenseForm({ initialData, onSubmit }: UseExpenseFormProps) {
         date: formatDate(new Date()),
       });
       setErrors({});
-    } catch (error) {
+    } catch (error: any) {
+      if (error.errors){
+        setErrors(error.errors);
+      }
       console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
