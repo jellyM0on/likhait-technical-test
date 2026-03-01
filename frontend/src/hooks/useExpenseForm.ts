@@ -22,11 +22,23 @@ export function useExpenseForm({ initialData, onSubmit }: UseExpenseFormProps) {
   const [errors, setErrors] = useState<Partial<ExpenseFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (field: keyof ExpenseFormData, value: string) => {
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+
+    if (field === "date") {
+      if (value > today) {
+        setErrors((prev) => ({
+          ...prev,
+          date: "Cannot be in the future.",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          date: undefined,
+        }));
+      }
     }
   };
 
