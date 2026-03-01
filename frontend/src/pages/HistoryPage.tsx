@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { getExpenses, createExpense } from "../services/api";
-import { Expense, ExpenseFormData } from "../types";
+import { getExpenses, createExpense, createCategory } from "../services/api";
+import { CategoryFormData, Expense, ExpenseFormData } from "../types";
 import YearNavigation from "../components/YearNavigation";
 import { MonthNavigation } from "../components/MonthNavigation";
 import CategoryBreakdown from "../components/CategoryBreakdown";
 import { CalendarExpenseTable } from "../components/CalendarExpenseTable";
 import { ExpenseForm } from "../components/ExpenseForm";
+import { CategoryForm } from "../components/CategoryForm";
 import { Modal, Button } from "../vibes";
 import { COLORS } from "../constants/colors";
 
@@ -13,6 +14,9 @@ const HistoryPage: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isManageDropdownOpen, setisManageDropdownOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   // Get year and month from URL params, default to current date if not provided
   const getInitialYearMonth = () => {
@@ -82,6 +86,16 @@ const HistoryPage: React.FC = () => {
     }
   };
 
+  const handleAddCategory = async (data: CategoryFormData) => {
+    try {
+      await createCategory(data);
+      setIsCategoryModalOpen(false);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      throw error;
+    }
+  };
+
   // Calculate category breakdown
   const categoryData = expenses.reduce(
     (acc, expense) => {
@@ -138,6 +152,44 @@ const HistoryPage: React.FC = () => {
     color: COLORS.secondary.s08,
   };
 
+  const dropdownWrapStyle: React.CSSProperties = {
+    position: "relative",
+  };
+
+  const dropdownMenuStyle: React.CSSProperties = {
+    position: "absolute",
+    right: 0,
+    top: "calc(100% + 8px)",
+    width: "220px",
+    background: "white",
+    border: `1px solid ${COLORS.secondary.s04}`,
+    borderRadius: "12px",
+    boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+    overflow: "hidden",
+    zIndex: 1000,
+  };
+
+  const dropdownItemStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "12px 14px",
+    background: "transparent",
+    border: "none",
+    textAlign: "left",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: 600,
+    color: COLORS.secondary.s10,
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  };
+
+  const rightHeaderStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  };
+
   return (
     <div style={pageStyle}>
       <div style={headerStyle}>
@@ -148,9 +200,45 @@ const HistoryPage: React.FC = () => {
             onYearChange={handleYearChange}
           />
         </div>
-        <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-          Add Expense
-        </Button>
+
+        <div style={rightHeaderStyle}>
+          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+            Add Expense
+          </Button>
+
+          <div style={dropdownWrapStyle}>
+            <Button variant="secondary" onClick={() => setisManageDropdownOpen((v) => !v)}>
+                Manage ▾
+            </Button>
+
+            {isManageDropdownOpen && (
+              <>
+                <div
+                  onClick={() => setisManageDropdownOpen(false)}
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    zIndex: 999,
+                    background: "transparent",
+                  }}
+                />
+                <div style={dropdownMenuStyle}>
+                  <button
+                    type="button"
+                    style={dropdownItemStyle}
+                    onClick={() => {
+                      setisManageDropdownOpen(false);
+                      setIsCategoryModalOpen(true);
+                    }}
+                  >
+                    <span style={{ fontSize: "16px" }}>＋</span>
+                    Add Category
+                  </button>
+                </div>
+              </>
+              )}
+          </div>
+        </div>
       </div>
 
       <MonthNavigation
@@ -187,6 +275,18 @@ const HistoryPage: React.FC = () => {
         <ExpenseForm
           onSubmit={handleAddExpense}
           onCancel={() => setIsModalOpen(false)}
+        />
+      </Modal>
+
+       <Modal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Add Category"
+      >
+        <CategoryForm
+          onSubmit={handleAddCategory}
+          onCancel={() => setIsCategoryModalOpen(false)}
+          submitLabel="Create Category"
         />
       </Modal>
     </div>
