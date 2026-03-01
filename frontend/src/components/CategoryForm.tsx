@@ -111,6 +111,10 @@ export function CategoryForm({
     closePicker();
   };
 
+  const clearEmoji = () => {
+    handleChange("emoji", "");
+  };
+
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
       <div style={sectionStyle}>
@@ -136,11 +140,27 @@ export function CategoryForm({
             onClick={togglePicker}
             aria-label="Choose category emoji"
           >
-            {formData.emoji}
+            {formData.emoji || ""}
           </button>
 
+          {formData.emoji && (
+            <button
+              type="button"
+              onClick={clearEmoji}
+              style={{
+                border: "none",
+                background: "transparent",
+                color: "#6B7280",
+                cursor: "pointer",
+                fontSize: 13,
+              }}
+            >
+              Clear
+            </button>
+          )}
+
           <div style={emojiPreviewStyle}>
-            <div style={helperStyle}>Pick an emoji for this category.</div>
+            {!formData.emoji && (<div style={helperStyle}>Pick an emoji for this category.</div> )}
             {errors.emoji && <div style={errorStyle}>{errors.emoji}</div>}
           </div>
         </div>
