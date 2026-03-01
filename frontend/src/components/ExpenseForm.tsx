@@ -42,7 +42,7 @@ export function ExpenseForm({
 
   const categoryOptions = categories.map((c) => ({
     value: String(c.id),
-    label: c.emoji ? `${c.emoji} ${c.name}` : c.name,
+    label: `${c.emoji || "📦"} ${c.name}`
   }));
 
   return (
